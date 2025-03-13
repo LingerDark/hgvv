@@ -1,0 +1,68 @@
+local successTrade = 0
+
+for i = 1, 100000 do
+    wait(1)
+    local args = {
+        [1] = game:GetService("Players"):WaitForChild("HugeRano02"),
+        [2] = true
+    }
+
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TradeAPI/AcceptOrDeclineTradeRequest"):InvokeServer(unpack(args))
+    
+    if game:GetService("Players").LocalPlayer.PlayerGui.TradeApp.Frame.Visible then
+        
+        getgenv().Config = {
+            ["Pet_Remote_Name"] = "winter_2024_frostclaw"
+        }
+        local PetsNoFull = {}
+        local clientData = require(game.ReplicatedStorage.ClientModules.Core.ClientData)
+        local playerData = clientData.get_data()[tostring(game.Players.LocalPlayer)]
+        local petName = getgenv().Config["Pet_Remote_Name"]
+        
+        for num,i in pairs(playerData.inventory.pets) do
+            if i.kind == petName then
+                if not PetsNoFull[i] then
+                    PetsNoFull[i] = true
+                end
+            end
+        end
+        
+        count = 0
+        for PetAge, _ in pairs(PetsNoFull) do  
+            if count == 18 then
+                break
+            else
+                PetsUniqie = PetAge.unique
+                local args = {
+                    [1] = PetsUniqie
+                }
+                
+                game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TradeAPI/AddItemToOffer"):FireServer(unpack(args))
+                PetsNoFull[PetAge] = nil
+                count += 1
+            end
+        end 
+
+        local faceColor = Color3.fromRGB(74, 198, 85)
+        while game:GetService("Players").LocalPlayer.PlayerGui.TradeApp.Frame.NegotiationFrame.Body.Accept.Face.Colors.Base.ImageColor3 ~= faceColor do
+            wait(1)
+        end
+
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TradeAPI/AcceptNegotiation"):FireServer()
+
+        while game:GetService("Players").LocalPlayer.PlayerGui.TradeApp.Frame.ConfirmationFrame.Visible do
+            wait(1)
+        end
+
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TradeAPI/ConfirmTrade"):FireServer()
+
+        while game:GetService("Players").LocalPlayer.PlayerGui.TradeApp.Frame.Visible do
+            wait(1)
+            successTrade += 1
+        end
+    end
+    
+    if successTrade == RecTrade then
+        break
+    end
+end
