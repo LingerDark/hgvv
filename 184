@@ -1,0 +1,57 @@
+print("hee")
+getgenv().Config = {
+    ["Pet_Remote_Name"] = "st_patricks_2025_clover_cow"
+}
+
+local function rename(remotename, hashedremote)
+    hashedremote.Name = remotename
+end
+table.foreach(getupvalue(require(game:GetService("ReplicatedStorage"):WaitForChild("Fsys")).load("RouterClient").init, 7), rename)
+
+local PetsNoFull = {}
+local clientData = require(game.ReplicatedStorage.ClientModules.Core.ClientData)
+local playerData = clientData.get_data()[tostring(game.Players.LocalPlayer)]
+local petName = getgenv().Config["Pet_Remote_Name"]
+
+for num, i in pairs(playerData.inventory.pets) do
+    if i.kind == petName then
+        if i.properties.age == 6 then
+            if not PetsNoFull[i] then
+                PetsNoFull[i] = true
+            end
+        end
+    end
+end
+
+local count = 0
+
+for agePot, _ in pairs(PetsNoFull) do
+    if count < 5 then
+        if count == 1 then
+            uniqueAge1 = agePot.unique
+        elseif count == 2 then
+            uniqueAge2 = agePot.unique
+        elseif count == 3 then
+            uniqueAge3 = agePot.unique
+        elseif count == 4 then
+            uniqueAge4 = agePot.unique
+        end  -- Закрываем if (содержит count == 1, 2, 3, 4)
+        count = count + 1
+        uniqueAgePots[agePot] = nil
+    else
+        break
+    end
+end  -- Закрываем внутренний цикл for
+
+print(uniqueAge1)
+
+local args = {
+    [1] = {
+        [1] = uniqueAge1,
+        [2] = uniqueAge2,
+        [3] = uniqueAge3,
+        [4] = uniqueAge4
+    }
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("PetAPI/DoNeonFusion"):InvokeServer(unpack(args))
